@@ -7,8 +7,8 @@ from DeliverySystem import PackageDelivery
 
 (total_distance, packages_hash, packages) = PackageDelivery.run()
 
-print('This is the WGU Package Delivery System')
-print('All packages were delivered in {} miles'.format(total_distance))
+print('WGU Package Delivery System for C950 - Data Structures and Algorithms II')
+print('Packages were delivered in {} miles'.format(total_distance))
 
 while True:
     print()
