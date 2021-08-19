@@ -6,6 +6,7 @@
 from datetime import timedelta
 from DeliverySystem import PackageDelivery
 
+
 print("************************************************************************************************")
 print("WGU Package Delivery System for C950 - Data Structures and Algorithms II by Marshall Christian")
 print("************************************************************************************************")
@@ -17,13 +18,26 @@ print("Congrats! All packages were delivered on time and your shift is over. You
 print("-----------------------------------------------------------------------------------------------------------------------")
 print('Packages were delivered in {} miles'.format(total_distance))
 
+
+
+
 while True:
+
+    # This is to help the special packages be displayed without repeated code
+    def package_look_up_for_interface(package_id):
+        package = packages_hash.look_up(int(package_id))
+        package_time = "10:00:00"
+        (hour, minute, sec) = package_time.split(':')
+        timestamp = timedelta(hours=int(hour), minutes=int(minute), seconds=int(sec))
+        print(package.specific_package_lookup(timestamp))
+
     print()
     user_input = input("""\
 Main Menu:
    1 - Look up based upon Package ID and a given time
    2 - View status of all packages for specific time - "HH:MM:SS"
    3 - Displays the total distance of all trucks traveled
+   4 - Check delivery of special packages 6,9,25,28,and 32
    exit - Exit the program.
    Please enter a number or "exit" to leave the program: """)
 
@@ -35,15 +49,16 @@ Main Menu:
         # Time complexity: O(n) with being the size of the bucket
         package = packages_hash.look_up(int(package_id))
 
-        time_string = input("Please enter a time in the format of HH:MM:SS : ")
-        (hour, minute, sec) = time_string.split(':')
+        package_time = input("Please enter a time in the format of HH:MM:SS : ")
+
+        (hour, minute, sec) = package_time.split(':')
         timestamp = timedelta(hours=int(hour), minutes=int(minute), seconds=int(sec))
 
         print(package.specific_package_lookup(timestamp))
 
     elif user_input == "2":
-        time_string = input("Please enter a time in the format of HH:MM:SS : ")
-        (hour, minute, sec) = time_string.split(":")
+        package_time = input("Please enter a time in the format of HH:MM:SS : ")
+        (hour, minute, sec) = package_time.split(":")
         timestamp = timedelta(hours=int(hour), minutes=int(minute), seconds=int(sec))
 
         # Loop through packages and display their current status
@@ -53,8 +68,27 @@ Main Menu:
     elif user_input == "3":
         print("Total Distance: {} miles".format(total_distance))
 
+    elif user_input == "4":
+        # We are going to display the special packages for ease of find.
+
+        package_id = 6
+        package_look_up_for_interface(6)
+
+        package_id = 9
+        package_look_up_for_interface(9)
+
+        package_id = 25
+        package_look_up_for_interface(25)
+
+        package_id = 28
+        package_look_up_for_interface(28)
+
+        package_id = 32
+        package_look_up_for_interface(32)
+
     elif user_input == "exit":
         exit()
 
     else:
         print("Invalid input. Please try again.")
+

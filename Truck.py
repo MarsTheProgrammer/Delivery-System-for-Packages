@@ -5,8 +5,8 @@ from datetime import timedelta
 
 class Truck(object):
     MAX_PACKAGES_PER_TRUCK = 16
-    SPEED_OF_TRUCK = 18.0
-    SECONDS_PER_HOUR = 3600.0
+    SPEED_OF_TRUCK = 18
+    SECONDS_PER_HOUR = 3600
 
     # Variables for the truck object:
     def __init__(self, identifier, start_time, start_location):
@@ -29,8 +29,7 @@ class Truck(object):
     # can_deliver() figures out of a truck has the ability to deliver the specified package
     # Checks to see if package on one of the other trucks. Checks if can be delivered by that truck number, or if the package is ready
     def can_deliver(self, package):
-        return not package.on_truck and self.identifier in package.truck_availability and self.current_time >= package.ready_at
-
+        return not (package.on_truck and self.identifier in package.truck_availability) and (self.current_time >= package.package_is_ready)
 
     # This adds the packages to package list. Then, the package location to a location set
     # Time Complexity: O(n) - 'n' being the number of packages
@@ -66,7 +65,7 @@ class Truck(object):
 
             # Finds all packages that need to be delivered at current location
             # Time & Space complexity: O(n)
-            packages_at_location = [p for p in self.packages if p.destination.identifier == nearest_location.identifier]
+            packages_at_location = [pack for pack in self.packages if pack.destination.identifier == nearest_location.identifier]
             for package in packages_at_location:
                 package.delivered_at = delivered_at
 

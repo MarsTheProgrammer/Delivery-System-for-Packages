@@ -18,12 +18,12 @@ class PackageDelivery(object):
         packages_hash = HashTable(40)
 
         # Loading DistanceName data from the csv file and populating the hash table and graph with location data
-        with open('DistanceName.csv') as csvfile:
-            location_data = csv.reader(csvfile)
+        with open("DistanceName.csv") as csvfile:
+            distance_name = csv.reader(csvfile)
 
             # Time to loop through the location data
             # Time & Space complexity: O(n)
-            for row in location_data:
+            for row in distance_name:
                 location = Location(*row)
 
                 # Inserting location data into hash table
@@ -41,10 +41,10 @@ class PackageDelivery(object):
         bottom_priority = []
 
         # This will loop through the PackageInformation file and create the three lists from above: all packages, top and bottom priority
-        with open('PackageInformation.csv') as csvfile:
-            package_data = csv.reader(csvfile)
+        with open("PackageInformation.csv") as csvfile:
+            package_info = csv.reader(csvfile)
 
-            for row in package_data:
+            for row in package_info:
                 package = Package(*(row + [locations_hash.look_up(row[1])]))
 
                 all_packages.append(package)
@@ -59,28 +59,25 @@ class PackageDelivery(object):
 
         # This will loop through the DistanceTable file and sort the data between locations.
         # The data will then be used to create the weighted edges between vertexes in the graph
-        with open('DistanceTable.csv') as csvfile:
-            distance_data = csv.reader(csvfile)
+        with open("DistanceTable.csv") as csvfile:
+            distance_table = csv.reader(csvfile)
 
             # Loops through every cell in DistanceTable file
             # Time & Space complexity: O(n^2)
-            for i, row in enumerate(distance_data):
-                for j, data in enumerate(row):
+            for first_row, row in enumerate(distance_table):
+                for second_row, data in enumerate(row):
                     if data != '':
                         # Adds weighted edge to graph
                         # Time complexity: O(n)
-                        graph.add_weighted_edge(locations_hash.look_up(i),
-                                                locations_hash.look_up(j),
+                        graph.add_weighted_edge(locations_hash.look_up(first_row),
+                                                locations_hash.look_up(second_row),
                                                 float(data))
 
         start_time = timedelta(hours=8)
         start_location = locations_hash.look_up(0)
 
         # There will only be 2 trucks. The first truck will travel twice.
-        trucks = [
-            Truck(1, start_time, start_location),
-            Truck(2, start_time, start_location)
-        ]
+        truck_list = [Truck(1, start_time, start_location), Truck(2, start_time, start_location)]
 
         # List of the time when trucks need to wait to leave the hub. Used for optimization
         times_to_leave_hub = [
@@ -96,19 +93,19 @@ class PackageDelivery(object):
 
         count = 0
         truck_index = 0
-        i = 0
+        first_row = 0
 
         # While loop to end when all packages are delivered
         while count < len(all_packages):
-            truck = trucks[truck_index]
+            truck = truck_list[truck_index]
 
-            if i < len(times_to_leave_hub):
-                leave_hub_at = times_to_leave_hub[i]
+            if first_row < len(times_to_leave_hub):
+                leave_hub_at = times_to_leave_hub[first_row]
                 truck.wait_at_hub(leave_hub_at)
 
             # Filter priority lists on which packages the truck can deliver
             # Time & Space complexity: O(n)
-            filtered_top = [p for p in top_priority if truck.can_deliver(p)]
+            filtered_top = [pack for pack in top_priority if truck.can_deliver(pack)]
             # Takes all the top priority packages the truck can fit
             # Time & Space complexity: O(1) because it is an append
             for package in filtered_top:
@@ -120,7 +117,7 @@ class PackageDelivery(object):
 
             # If is not full, fill it with low priority packages
             if truck.is_full() is not True:
-                filtered_low = [p for p in bottom_priority if truck.can_deliver(p)]
+                filtered_low = [pack for pack in bottom_priority if truck.can_deliver(pack)]
                 for package in filtered_low:
                     truck.add_package(package)
                     count += 1
@@ -131,11 +128,11 @@ class PackageDelivery(object):
             # Truck delivers the packages using the delivering_packages_algo algorithm to find the best path through graph
             # Time & Space complexity: O(n^2)
             truck.delivering_packages_algo(graph, (len(all_packages) - count) > truck.max)
-            i += 1
-            truck_index = i % len(trucks)
+            first_row += 1
+            truck_index = first_row % len(truck_list)
 
         # Finds the total distance of truck
         def total_distance(truck):
             return truck.total_distance
 
-        return [sum(map(total_distance, trucks)), packages_hash, all_packages]
+        return [sum(map(total_distance, truck_list)), packages_hash, all_packages]

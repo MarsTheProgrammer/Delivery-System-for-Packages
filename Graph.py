@@ -3,7 +3,7 @@
 
 from HashTable import HashTable
 from Vertex import Vertex
-from WeightedEdge import Edge
+from WeightedEdge import WeightedEdge
 
 # This graph was created with the help of CI Cemel Tepe and other users on the WGU Discord
 
@@ -20,8 +20,8 @@ class Graph(object):
     # Creates a 2 directional weighted edge between 2 vertexes
     # Time complexity: O(n)
     def add_weighted_edge(self, origin, destination, weight):
-        self.vertices.look_up(origin.identifier).add_edge(Edge(destination, weight))
-        self.vertices.look_up(destination.identifier).add_edge(Edge(origin, weight))
+        self.vertices.look_up(origin.identifier).add_edge(WeightedEdge(destination, weight))
+        self.vertices.look_up(destination.identifier).add_edge(WeightedEdge(origin, weight))
 
     # Creates vertex from location, and add to hash table
     # Time complexity: O(n)

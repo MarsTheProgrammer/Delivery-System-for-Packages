@@ -5,7 +5,7 @@
 
 # Edge class used in the graph
 # Has 3 variables: location, identifier, and weight
-class Edge(object):
+class WeightedEdge(object):
     def __init__(self, location, weight=0.0):
         self.identifier = location.identifier
         self.location = location
