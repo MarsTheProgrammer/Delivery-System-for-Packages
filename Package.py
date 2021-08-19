@@ -1,13 +1,15 @@
 # As per the requirements:
 # Marshall Christian 001520145
 
+
+
 from datetime import timedelta
 
 class Package(object):
     EOD_TIMESTAMP = timedelta(hours=17)
     SPECIAL_PACKAGES = [13, 15, 19]
     DELIVERED = 'Delivered At {}'
-    ON_TRUCK = 'On Truck - Left Hub At: {}'
+    EN_ROUTE = 'En route - Left Hub At: {}'
     AT_HUB = 'Waiting At Hub'
 
     def __init__(self, identifier, street, city, zipcode, deadline, weight_in_kilos, notes, destination):
@@ -29,12 +31,12 @@ class Package(object):
         self._modify(notes)
 
     def inline_report(self, time):
-        report = self.report(time)
-
+        report = self.specific_package_lookup(time)
+        # Formatting purposes
         return report[1:].replace('\n', '   ')
 
-    # Formatting
-    def report(self, time=timedelta(hours=17)):
+    # Formatting for the report that is used when looking up information about a package.
+    def specific_package_lookup(self, time=timedelta(hours=17)):
         return """
 ID: {}
 Address: {} {} UT
@@ -70,7 +72,7 @@ Delivery Status: {}\
         if time > self.delivered_at:
             return self.DELIVERED.format(self.delivered_at)
         elif time > self.left_hub_at:
-            return self.ON_TRUCK.format(self.left_hub_at)
+            return self.EN_ROUTE.format(self.left_hub_at)
 
         return self.AT_HUB
 

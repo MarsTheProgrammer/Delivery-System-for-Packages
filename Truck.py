@@ -18,19 +18,6 @@ class Truck(object):
         self.packages = []
         self.locations = set()
 
-    # This adds the packages to package list. Then, the package location to a location set
-    # Time Complexity: O(n) - 'n' being the number of packages
-    def add_package(self, package):
-        # If the packages is less than the MAX_PACKAGES_PER_TRUCK, add package to list.
-        if len(self.packages) < self.max:
-            self.packages.append(package)
-            self.locations.add(package.destination)
-
-            # Let it know the package is on the truck and @ what time
-            package.on_truck = True
-            package.left_hub_at = self.current_time
-
-
     # Checks to see of truck is full
     def is_full(self):
         return len(self.packages) == self.max
@@ -45,7 +32,20 @@ class Truck(object):
         return not package.on_truck and self.identifier in package.truck_availability and self.current_time >= package.ready_at
 
 
-    # This is a greedy algorithm
+    # This adds the packages to package list. Then, the package location to a location set
+    # Time Complexity: O(n) - 'n' being the number of packages
+    def add_package(self, package):
+        # If the packages is less than the MAX_PACKAGES_PER_TRUCK, add package to list.
+        if len(self.packages) < self.max:
+            self.packages.append(package)
+            self.locations.add(package.destination)
+
+            # Let it know the package is on the truck and @ what time
+            package.on_truck = True
+            package.left_hub_at = self.current_time
+
+    # This algorithm was made possible by the help of Doctor Amy Antonucci and other discord resources.
+    # This is a self adjusting greedy algorithm
     # delivering_packages_algo takes a couple of parameters. A map of the city and a boolean of returning to the hub.
     # Here is what it does: sorts the packages list by distance of trucks current location after the truck had traveled.
     # After doing this, it will update the list based on the new location. This will continue until all packages are delivered
@@ -64,8 +64,8 @@ class Truck(object):
             time_to_deliver = self.traveling_time(distance)
             delivered_at = self.current_time + timedelta(seconds=time_to_deliver)
 
-            # Finds all packages that need to be delivered at current location. In case there are multiple for optimization
-            # Time complexity: O(n)
+            # Finds all packages that need to be delivered at current location
+            # Time & Space complexity: O(n)
             packages_at_location = [p for p in self.packages if p.destination.identifier == nearest_location.identifier]
             for package in packages_at_location:
                 package.delivered_at = delivered_at
@@ -87,8 +87,9 @@ class Truck(object):
             self.current_time = self.current_time + timedelta(seconds=time_to_return)
             self.total_distance += distance
 
-            # ensure the locations list is empty before adding more packages
+            # Ensure the locations list is empty before adding more packages
             self.locations = set()
+
 
     # Helps get distance in terms of traveling time
     def traveling_time(self, distance):
