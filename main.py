@@ -26,7 +26,7 @@ while True:
     # This is to help the special packages be displayed without repeated code
     def package_look_up_for_interface(package_id):
         package = packages_hash.look_up(int(package_id))
-        package_time = "10:00:00"
+        package_time = "12:00:00"
         (hour, minute, sec) = package_time.split(':')
         timestamp = timedelta(hours=int(hour), minutes=int(minute), seconds=int(sec))
         print(package.specific_package_lookup(timestamp))
@@ -37,7 +37,6 @@ Main Menu:
    1 - Look up based upon Package ID and a given time
    2 - View status of all packages for specific time - "HH:MM:SS"
    3 - Displays the total distance of all trucks traveled
-   4 - Check delivery of special packages 6,9,25,28,and 32
    exit - Exit the program.
    Please enter a number or "exit" to leave the program: """)
 
@@ -68,23 +67,6 @@ Main Menu:
     elif user_input == "3":
         print("Total Distance: {} miles".format(total_distance))
 
-    elif user_input == "4":
-        # We are going to display the special packages for ease of find.
-
-        package_id = 6
-        package_look_up_for_interface(6)
-
-        package_id = 9
-        package_look_up_for_interface(9)
-
-        package_id = 25
-        package_look_up_for_interface(25)
-
-        package_id = 28
-        package_look_up_for_interface(28)
-
-        package_id = 32
-        package_look_up_for_interface(32)
 
     elif user_input == "exit":
         exit()

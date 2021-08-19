@@ -11,7 +11,8 @@ class Package(object):
     DELIVERED = "Delivered At {}"
     EN_ROUTE = "En route, Left Hub At: {}"
     AT_HUB = "Waiting At Hub"
-
+    DEADLINE_PACKAGES = [25, 28]
+# add parameter of EARLIEST_CAN_DELIVER???
     def __init__(self, identifier, street, city, zipcode, deadline, weight, notes, destination):
         self.identifier = int(identifier)
         self.street = street
@@ -21,22 +22,27 @@ class Package(object):
         self.deadline = self.convert_to_timestamp(deadline)
         self.weight = weight
         self.notes = notes
-        self.modify(notes=notes)
 
         self.delivered_at = None
         self.package_is_ready = timedelta(hours=8)
-        self.truck_availability = [1, 2]
+        self.available_trucks = [1, 2]
         self.left_hub_at = None
         self.on_truck = False
         self.notes = notes
 
     def inline_report(self, time):
+        if self.identifier == 9:
+            self.street = "410 S State St"
+            self.zip = 84111
         report = self.specific_package_lookup(time)
         # Formatting purposes
         return report[1:].replace("\n", "   ")
 
     # Formatting for the report that is used when looking up information about a package.
     def specific_package_lookup(self, time = timedelta(hours=17)):
+        if self.identifier == 9:
+            self.street = "410 S State St"
+            self.zip = 84111
         return """
 ID: {}
 Address: {} {} UT
@@ -63,11 +69,11 @@ Delivery Status: {}\
         if self.deadline == self.EOD_TIMESTAMP:
             return "{} (EOD)".format(self.deadline)
 
-        return "{}".format(self.deadline)
-
-    # Figures out if the package is top priority by deadline or special instructions
+    # Figures out if the package is top priority by manually loading
     def is_top_priority(self):
-        return self.has_deadline() or self.notes != "None" or self.identifier in self.SPECIAL_PACKAGES
+        return self.identifier == 1 or 13 or 14 or 15 or 16 or 19 or 20 or 29 or 31 or 34 or 37 or 40 or 39 or 35 or 8 or 30 or \
+               36 or 38 or 18 or 3 or 33 or 32 or 27 or 6 or 25 or 26 or 24 or 23 or 22 or 21 or 17 or 28 or \
+                                  9 or 11 or 10 or 12 or 7 or 5 or 4 or 2
 
     # Finds delivery status by the time passed in
     def delivery_status_method(self, time):
@@ -84,14 +90,3 @@ Delivery Status: {}\
             return self.EOD_TIMESTAMP
         (hour, minute, sec) = time_string.split(":")
         return timedelta(hours=int(hour), minutes=int(minute), seconds=int(sec))
-
-    # Changes package state based on special instructions
-    def modify(self, notes):
-        if notes == ("Wrong address listed", notes):
-            self.package_is_ready = timedelta(hours=10, minutes=20, seconds=00)
-            self.street = "410 S State St"
-            self.zip = 84111
-        elif notes == ("Delayed", notes):
-            self.package_is_ready = timedelta(hours=9, minutes=5, seconds=00)
-        elif notes == ("Can only be on truck 2", notes):
-            self.truck_availability = [2]

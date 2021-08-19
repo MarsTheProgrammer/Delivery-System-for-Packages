@@ -29,7 +29,7 @@ class Truck(object):
     # can_deliver() figures out of a truck has the ability to deliver the specified package
     # Checks to see if package on one of the other trucks. Checks if can be delivered by that truck number, or if the package is ready
     def can_deliver(self, package):
-        return not (package.on_truck and self.identifier in package.truck_availability) and (self.current_time >= package.package_is_ready)
+        return not (package.on_truck and self.identifier in package.available_trucks) and (self.current_time >= package.package_is_ready)
 
     # This adds the packages to package list. Then, the package location to a location set
     # Time Complexity: O(n) - 'n' being the number of packages
@@ -67,6 +67,7 @@ class Truck(object):
             # Time & Space complexity: O(n)
             packages_at_location = [pack for pack in self.packages if pack.destination.identifier == nearest_location.identifier]
             for package in packages_at_location:
+
                 package.delivered_at = delivered_at
 
                 # Removes package from list

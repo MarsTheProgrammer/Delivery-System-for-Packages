@@ -38,7 +38,6 @@ class PackageDelivery(object):
         # Lists
         all_packages = []
         top_priority = []
-        bottom_priority = []
 
         # This will loop through the PackageInformation file and create the three lists from above: all packages, top and bottom priority
         with open("PackageInformation.csv") as csvfile:
@@ -54,8 +53,6 @@ class PackageDelivery(object):
                 # Time complexity: O(1) because it is an append
                 if package.is_top_priority():
                     top_priority.append(package)
-                else:
-                    bottom_priority.append(package)
 
         # This will loop through the DistanceTable file and sort the data between locations.
         # The data will then be used to create the weighted edges between vertexes in the graph
@@ -79,17 +76,12 @@ class PackageDelivery(object):
         # There will only be 2 trucks. The first truck will travel twice.
         truck_list = [Truck(1, start_time, start_location), Truck(2, start_time, start_location)]
 
-        # List of the time when trucks need to wait to leave the hub. Used for optimization
-        times_to_leave_hub = [
-            timedelta(hours=8),
-            timedelta(hours=9, minutes=5),
-            timedelta(hours=10, minutes=20)
-        ]
+        # List of the time when trucks need to wait to leave the hub
+        times_to_leave_hub = [timedelta(hours=8), timedelta(hours=9, minutes=35), timedelta(hours=10, minutes=20)]
 
-        # Sorts the top and bottom priority lists based on distance from the hub
+        # Sorts the top priority lists based on distance from the hub
         # Time & Space complexity: O(n)
         top_priority = sorted(top_priority, key=graph.distance_to_deliver(start_location))
-        bottom_priority = sorted(bottom_priority, key=graph.distance_to_deliver(start_location))
 
         count = 0
         truck_index = 0
@@ -99,11 +91,12 @@ class PackageDelivery(object):
         while count < len(all_packages):
             truck = truck_list[truck_index]
 
-            if first_row < len(times_to_leave_hub):
+            if first_row <= len(times_to_leave_hub):
                 leave_hub_at = times_to_leave_hub[first_row]
                 truck.wait_at_hub(leave_hub_at)
+            first_row += 1
 
-            # Filter priority lists on which packages the truck can deliver
+            # Adds the packages via the top priority list
             # Time & Space complexity: O(n)
             filtered_top = [pack for pack in top_priority if truck.can_deliver(pack)]
             # Takes all the top priority packages the truck can fit
@@ -115,20 +108,9 @@ class PackageDelivery(object):
                 if truck.is_full():
                     break
 
-            # If is not full, fill it with low priority packages
-            if truck.is_full() is not True:
-                filtered_low = [pack for pack in bottom_priority if truck.can_deliver(pack)]
-                for package in filtered_low:
-                    truck.add_package(package)
-                    count += 1
-
-                    if truck.is_full():
-                        break
-
             # Truck delivers the packages using the delivering_packages_algo algorithm to find the best path through graph
             # Time & Space complexity: O(n^2)
             truck.delivering_packages_algo(graph, (len(all_packages) - count) > truck.max)
-            first_row += 1
             truck_index = first_row % len(truck_list)
 
         # Finds the total distance of truck
