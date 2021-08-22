@@ -37,6 +37,7 @@ Main Menu:
    1 - Look up based upon Package ID and a given time
    2 - View status of all packages for specific time - "HH:MM:SS"
    3 - Displays the total distance of all trucks traveled
+   4 - Displays all special packages in various categories
    exit - Exit the program.
    Please enter a number or "exit" to leave the program: """)
 
@@ -66,6 +67,38 @@ Main Menu:
 
     elif user_input == "3":
         print("Total Distance: {} miles".format(total_distance))
+
+    elif user_input == "4":
+        print("\n This will display all special packages.\n")
+
+        print("All 10:30 deadline packages without other special notes:")
+
+        package_look_up_for_interface(1)
+        package_look_up_for_interface(29)
+        package_look_up_for_interface(30)
+        package_look_up_for_interface(31)
+        package_look_up_for_interface(34)
+        package_look_up_for_interface(37)
+        package_look_up_for_interface(40)
+
+        print("\nPackages to be delivered together: ")
+
+        package_look_up_for_interface(13)
+        package_look_up_for_interface(14)
+        package_look_up_for_interface(15)
+        package_look_up_for_interface(16)
+        package_look_up_for_interface(19)
+        package_look_up_for_interface(20)
+
+        print("\nPackages delayed until 9:05 : ")
+
+        package_look_up_for_interface(3)
+        package_look_up_for_interface(18)
+        package_look_up_for_interface(36)
+        package_look_up_for_interface(38)
+
+        print("\nWrong address updated and delivered after 10:20 : ")
+        package_look_up_for_interface(9)
 
 
     elif user_input == "exit":

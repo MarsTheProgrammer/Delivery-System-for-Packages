@@ -4,9 +4,9 @@
 from datetime import timedelta
 
 class Truck(object):
-    MAX_PACKAGES_PER_TRUCK = 16
-    SPEED_OF_TRUCK = 18
-    SECONDS_PER_HOUR = 3600
+    packages_on_truck = 16
+    const_speed_of_truck = 18
+    seconds_to_hours = 3600
 
     # Variables for the truck object:
     def __init__(self, identifier, start_time, start_location):
@@ -14,22 +14,13 @@ class Truck(object):
         self.current_time = start_time
         self.start_location = start_location
         self.total_distance = 0
-        self.max = self.MAX_PACKAGES_PER_TRUCK
+        self.max = self.packages_on_truck
         self.packages = []
         self.locations = set()
-
-    # Checks to see of truck is full
-    def is_full(self):
-        return len(self.packages) == self.max
 
     # Simple helper method to get time @ hub
     def wait_at_hub(self, timestamp):
         self.current_time = timestamp
-
-    # can_deliver() figures out of a truck has the ability to deliver the specified package
-    # Checks to see if package on one of the other trucks. Checks if can be delivered by that truck number, or if the package is ready
-    def can_deliver(self, package):
-        return not (package.on_truck and self.identifier in package.available_trucks) and (self.current_time >= package.package_is_ready)
 
     # This adds the packages to package list. Then, the package location to a location set
     # Time Complexity: O(n) - 'n' being the number of packages
@@ -68,6 +59,7 @@ class Truck(object):
             packages_at_location = [pack for pack in self.packages if pack.destination.identifier == nearest_location.identifier]
             for package in packages_at_location:
 
+                # Stamps delivery
                 package.delivered_at = delivered_at
 
                 # Removes package from list
@@ -93,4 +85,4 @@ class Truck(object):
 
     # Helps get distance in terms of traveling time
     def traveling_time(self, distance):
-        return (distance / self.SPEED_OF_TRUCK) * self.SECONDS_PER_HOUR
+        return (distance / self.const_speed_of_truck) * self.seconds_to_hours
